@@ -1,0 +1,164 @@
+##Forcasting Field Crop Harvesting In Calloway County 
+##by Brendan Schulte
+##4/27/2020
+
+##Install and require packages for project
+
+install.packages("ggplot2")
+install.packages("plyr")
+install.packages("dplyr")
+install.packages("RColorBrewer")
+install.packages("ggthemes")
+install.packages("shiny")
+install.packages("rmarkdown")
+install.packages("flexdashboard")
+
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(RColorBrewer)
+library(ggthemes)
+library(shiny)
+library(rmarkdown)
+library(flexdashboard)
+
+##All data already is csv format via USDA
+##Load in all data into dataframes
+
+CornData <- "C:/Users/Brendan Schulte/Desktop/RStudio_Proj_2020/DataForProj/Corn_Data.csv"
+Corn1 <- read.table (file = CornData, header = TRUE, sep = ",")
+
+WheatData <- "C:/Users/Brendan Schulte/Desktop/RStudio_Proj_2020/DataForProj/Wheat_Data.csv"
+Wheat1 <- read.table (file = WheatData, header = TRUE, sep = ",")
+
+SoybeanData <- "C:/Users/Brendan Schulte/Desktop/RStudio_Proj_2020/DataForProj/Soybean_Data.csv"
+Soybean1 <- read.table (file = SoybeanData, header = TRUE, sep = ",")
+
+TobaccoData <- "C:/Users/Brendan Schulte/Desktop/RStudio_Proj_2020/DataForProj/Tobacco_Data.csv"
+Tobacco1 <- read.table (file = TobaccoData, header = TRUE, sep = ",")
+
+##Use plyr and dplyr to manipulate data
+
+##Clean the data by removing rows that have no data in the original data frame
+
+Corn2 <- Corn1[-c(51,52,53,54,56,55,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87), ]
+Soybean2 <- Soybean1[-c(63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87), ]
+Wheat2 <- Wheat1[-c(63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87), ]
+Tobacco2 <- Tobacco1[-c(63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87), ]
+
+  ##Create Data Frame for ggplot2 to refrence for graphs
+
+CornDataGraph <- select(Corn2, 1, 11)
+SoybeanDataGraph <- select(Soybean2, 1, 11)
+WheatDataGraph <- select(Wheat2, 1, 11)
+TobaccoDataGraph <- select(Tobacco2, 1, 11)
+
+##Had a conversion Error With my Data Converting from String to Numeric in my CSV File Using
+##CornDataGraph$Value <- as.numeric(CornDataGraph$Value)
+##CornDataGraph$Year <- as.numeric(CornDataGraph$Year)
+##Should be getting a true conversion but am getting back 2 digit random numbers
+##Will Overcome by typing in true values and creating a new dataframe to pull data from
+
+CornValue <- c( 21464424.52, 18303602.40, 18695736.64, 17723475.00, 16860144.00, 16778690.23, 18413939.47, 18384912.00, 31699966.40,  09757403.70,  25519536.00,  12425796.00,  16984110.00,  16162350.00, 
+12791520.00,  11838682.00,  10046976.00,  11827510.00,  09812096.00,  08860010.00,  11115691.00, 08188924.00, 07373360.00, 09828448.00, 09981400.00, 14445120.00, 11235504.00, 11411725.00, 
+08246890.56,  11489280.00,  06829329.76,  08505836.88,  10192860.32,  03780810.00,  05226057.76, 07560793.80, 10914969.00, 12187245.00, 02076450.75, 07858359.22, 09871800.00, 03854670.16, 
+06214131.00, 03122168.51, 06843891.96,  09992125.92,  05071530.24,  03728741.80,  02053782.64)
+CornYear <- c(2021,2020,2019,2018,2017,2016,2015,2014,2013,2012,2011,2010,2009,2008,2007,2006,2005,2004,2003,2002,2001,2000,1999,1998,1997,1996,1995,1994,1993,1992,1991,1990,1989,1988, 1987, 1986, 1985, 1984, 1983, 1982, 1981, 1980,1979, 1978, 1977, 1976, 1975, 1974, 1973)
+CornDataGraph1 <- data.frame(CornValue,CornYear)
+
+SoybeanValue <- c( 15837768.23,  14030454.19,  13643019.66,  20253784.32,  20817954.58, 18624815.80,  20957912.93,  23590148.40,  29261259.18,  18870757.75, 
+        19302473.54,  11402692.97,  21288412.80,  14691480.75,  3692653.20, 10673223.60, 9870745.95,   12768013.28,  10751331.60,  7192450.56, 6652054.80,   5043326.40,   2074824.40,   6907078.17,   11168484.60, 9273831.84, 7737674.00,   8121648.80, 7613924.64,   6501725.28,  5548222.68,  7392944.70,   6801506.40,   4876299.69,   3911281.29,  6394363.41,   8838538.00,  9883317.60,   5223976.68,   11764522.22, 14756441.20,  8272692.80,  19532955.80,  11410675.20,  13657164.80, 
+    8413353.76, 8533500.56,   9310887.30,   9657571.56,   4328299.56)
+SoybeanYear <- c(2021,2020,2019,2018,2017,2016,2015,2014,2013,2012,2011,2010,2009,2008,2007,2006,2005,2004,2003,2002,2001,2000,1999,1998,1997,1996,1995,1994,1993,1992,1991,1990,1989,1988, 1987, 1986, 1985, 1984, 1983, 1982, 1981, 1980,1979, 1978, 1977, 1976, 1975, 1974, 1973,1972)
+SoybeanDataGraph1 <- data.frame(SoybeanValue,SoybeanYear)
+
+TobaccoValue <- c( 12338353.14,  12063605.71,  12022992.94,  11791083.47,  11301227.92, 
+                   11111950.77,  11373004.36,  11616296.19,  10516756.03,  9427795.89,  
+                   9044814.55,   9030075.11,   8888284.92,   7887820.93,   7465235.39,  
+                   7446638.53,   8713886.72,   8702189.40,   7596815.60,   7645417.20,  
+                   8975472.00,   10238810.80,  7277633.60,   8176575.00,   9028142.20,  
+                   9224670.00,   7637806.80,   9159826.50,   7833016.00,   6658782.90,  
+                   5542829.60,   5895162.00,   4660731.30,   4554149.60,   4400550.00,  
+                   6877909.50,   7768328.40,   8799490.80,   5289883.20,   8218655.00,  
+                   5936044.80,   4739831.20,   5296132.40,   5584281.00,   4504500.00,  
+                   2576491.20,   2292980.40,   1605987.45,   1487360.00,   2165823.00)
+TobaccoYear <- c(2021,2020,2019,2018,2017,2016,2015,2014,2013,2012,2011,2010,2009,2008,2007,2006,2005,2004,2003,2002,2001,2000,1999,1998,1997,1996,1995,1994,1993,1992,1991,1990,1989,1988, 1987, 1986, 1985, 1984, 1983, 1982, 1981, 1980,1979, 1978, 1977, 1976, 1975, 1974, 1973,1972)
+TobaccoDataGraph1 <- data.frame(TobaccoValue,TobaccoYear)
+
+WheatValue <- c(3421256.95,4241962.90,3033031.32,2738749.67,2447618.54,4492365.52,5595772.70,7452509.99,14724923.39,11144159.12,8646746.29,1315583.27,3580797.48,10493518.56,2076386.40,1535756.74,2633248.80,3760258.50,4020354.00,3293149.20,3828784.05,3319152.20,3326683.50,3950688.00,4396763.50,7136780.80,5902960.00,4821062.40,3551262.50,4338694.80,1542085.60,2776340.16,5118826.65,4399164.00,2596867.00,1668308.40,1766651.25,3957700.80,2653848.00,5067284.80,7347397.20,3837960.00,2841194.64,1329599.81,1446962.40,  1734665.45,   1145760.00,   1757664.15,   408131.10,  268420.32)
+WheatYear <- c(2021,2020,2019,2018,2017,2016,2015,2014,2013,2012,2011,2010,2009,2008,2007,2006,2005,2004,2003,2002,2001,2000,1999,1998,1997,1996,1995,1994,1993,1992,1991,1990,1989,1988, 1987, 1986, 1985, 1984, 1983, 1982, 1981, 1980,1979, 1978, 1977, 1976, 1975, 1974, 1973,1972)
+WheatDataGraph1 <- data.frame(WheatValue,WheatYear)
+
+##Find the Margin of Error Using  dplyr 
+
+CornMarginOfErrorPrice <- summarize(Corn2, mean(AvgPriceLossGain))
+SoybeanMarginOfErrorPrice <- summarize(Soybean2, mean(AvgPriceLossGain))
+TobaccoMarginOfErrorPrice <- summarize(Tobacco2, mean(AvgPriceLossGain))
+WheatMarginOfErrorPrice <- summarize(Wheat2, mean(AvgPriceLossGain))
+
+CornMarginOfErrorBushels <- summarize(Corn2, mean(LossGainBushel))
+SoybeanMarginOfErrorBushels <- summarize(Soybean2, mean(LossGainBushel))
+WheatMarginOfErrorBushels <- summarize(Wheat2, mean(LossGainBushel))
+TobaccoMarginOfErrorBushels <- summarize(Tobacco2, mean(LossGainBushel))
+
+##Assign Variables to the margin of error
+
+CornMarginOfErrorPrice1 <- 0.0558
+SoybeanMarginOfErrorPrice1 <- 0.2812
+TobaccoMarginOfErrorPrice1 <- 0.0556
+WheatMarginOfErrorPrice1 <- 0.1388
+
+CornMarginOfErrorBushels1 <- 	1.18
+SoybeanMarginOfErrorBushels1 <- 0.7238
+WheatMarginOfErrorBushels1 <- 1.3062
+TobaccoMarginOfErrorBushels1 <- 79.6368
+
+##Create Variable for next year estimates
+
+Corn2021 <- 	4.32
+Soybean2021 <- 	9.78 
+Tobacco2021 <- 2.03 
+Wheat2021 <- 4.88
+
+##Converting Data in DataFrame to Usable data types for ggplot2
+
+CornDataGraph$Value <- as.numeric(CornDataGraph$Value)
+CornDataGraph1$Year <- as.numeric(CornDataGraph1$Year)
+SoybeanDataGraph1$Value <- as.double(SoybeanDataGraph1$Value)
+SoybeanDataGraph1$Year <- as.numeric(SoybeanDataGraph1$Year)
+TobaccoDataGraph1$Value <- as.double(TobaccoDataGraph1$Value)
+TobaccoDataGraph1$Year <- as.numeric(TobaccoDataGraph1$Year)
+WheatDataGraph1$Value <- as.double(WheatDataGraph1$Value)
+WheatDataGraph1$Year <- as.numeric(WheatDataGraph1$Year)
+
+##Use ggplot2 for creating graphs
+
+options(scipen=999)
+
+CornGraph <- ggplot(CornDataGraph1, aes(x=CornYear, y=CornValue)) +
+  geom_smooth(method="auto", col="firebrick", se = FALSE) +
+  labs(title="Total Price Of Corn", subtitle="Value in USD",
+       y="Total Value($)", x="Year", caption="Figure 1. Corn") +
+  scale_colour_brewer(palette = "Set1")
+CornGraph + scale_colour_excel() + theme_excel()
+
+SoybeanGraph <- ggplot(SoybeanDataGraph1, aes(x=SoybeanYear, y=SoybeanValue)) +
+  geom_smooth(method="auto", col="firebrick", se = FALSE) +
+  labs(title="Total Price Of Soybean", subtitle="Value in USD",
+       y="Total Value($)", x="Year", caption="Figure 1. Soybean") +
+  scale_colour_brewer(palette = "Set1")
+SoybeanGraph + scale_colour_excel() + theme_excel()
+
+TobaccoGraph <- ggplot(TobaccoDataGraph1, aes(x=TobaccoYear, y=TobaccoValue)) +
+  geom_smooth(method="auto", col="firebrick", se = FALSE) +
+  labs(title="Total Price Of Tobacco", subtitle="Value in USD",
+       y="Total Value($)", x="Year", caption="Figure 1. Tobacco") +
+  scale_colour_brewer(palette = "Set1")
+TobaccoGraph + scale_colour_excel() + theme_excel()
+
+WheatGraph <- ggplot(WheatDataGraph1, aes(x=WheatYear, y=WheatValue)) +
+  geom_smooth(method="auto", col="firebrick", se = FALSE) +
+  labs(title="Total Price Of Wheat", subtitle="Value in USD",
+       y="Total Value($)", x="Year", caption="Figure 1. Wheat") +
+  scale_colour_brewer(palette = "Set1")
+WheatGraph + scale_colour_excel() + theme_excel()

@@ -1,0 +1,68 @@
+---
+title: "Forcasting Field Crop Harvesting In Calloway County "
+author: "Brendan Schulte"
+date: "May 3, 2020"
+output: html_document
+runtime: shiny
+---
+
+```{r global, include=FALSE}
+# load data in 'global' chunk so it can be shared by all users of the dashboard
+
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(RColorBrewer)
+library(ggthemes)
+library(shiny)
+library(rmarkdown)
+library(flexdashboard)
+
+CornMarginOfErrorPrice1 <- 0.0558
+SoybeanMarginOfErrorPrice1 <- 0.2812
+TobaccoMarginOfErrorPrice1 <- 0.0556
+WheatMarginOfErrorPrice1 <- 0.1388
+CornMarginOfErrorBushels1 <- 	1.18
+SoybeanMarginOfErrorBushels1 <- 0.7238
+WheatMarginOfErrorBushels1 <- 1.3062
+TobaccoMarginOfErrorBushels1 <- 79.6368
+Corn2021 <- 	4.32
+Soybean2021 <- 	9.78 
+Tobacco2021 <- 2.03 
+Wheat2021 <- 4.88
+
+```
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+
+```
+
+    
+-------------------------------------
+    
+### This application forecasts future crop production for Calloway County, Kentucky. Select the amount of acreage you want to farm and a crop to plant and it will show you the projected outcome for next year.  
+
+    
+```{r build-selector,echo=FALSE}
+selectInput("Commodity", label = "Select Crop:",
+              choices = c('Corn'= 4.32,'Soybean'= 9.78,'Tobacco'= 2.03,'Wheat'= 4.88), selected = 'Wheat')
+sliderInput("Acreage1", label = "Select A Crop:",
+             min=0, max=1000, value=500)
+
+```
+ 
+Row
+-------------------------------------
+    
+### Chart 2
+    
+```{r}
+
+```
+    
+### Chart 3
+
+```{r}
+
+```

@@ -1,0 +1,216 @@
+---
+output:
+  html_document: default
+  word_document: default
+---
+## Forcasting Field Crop Harvesting In Calloway County  
+
+---
+title: "Forcasting Field Crop Harvesting In Calloway County "
+author: "Brendan Schulte"
+date: "5/3/2020"
+output: word_document
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+Packages Installed
+```{r pressure, eval=FALSE}
+install.packages("ggplot2")
+install.packages("plyr")
+install.packages("dplyr")
+install.packages("RColorBrewer")
+install.packages("ggthemes")
+install.packages("shiny")
+install.packages("rmarkdown")
+install.packages("flexdashboard")
+library(ggplot2)
+library(plyr)
+library(dplyr)
+library(RColorBrewer)
+library(ggthemes)
+library(shiny)
+library(rmarkdown)
+library(flexdashboard)
+```
+
+
+## Summary
+
+My project is trying to increase the forefront of agriculture making life easier for farmers while making it beneficial to all other people who consume their products. When planting crops the farmer has to decide what’s best for the soil, while trying to create a crop that will be profitable for them. Often farmers say that they’re surprised by the crop either they got much more or much less than they anticipated that year.
+
+With this information available to the common farmer they would no longer have any guesswork. They could completely leave behind crops that had failed and they could select crops based upon what is most profitable.
+
+My research questions were what crop is the most profitable in Calloway County. I thought it would be corn through my experience corn is a hearty crop that usually provides a good profit. 
+
+I thought a good place to get my data would be at the USDA the United States department of agriculture. Every year they send out surveys to people on what they grew, how many bushels per acre they got, how many acres they farmed and how much they sold their crop. 
+
+I analyze the data by taking the different years totals and then finding the difference between the year prior and then taking an average of those differences creating a margin of error. I also took the years total sold in dollars and then divided it by the total amount of acres planted and they gave me a price per acre. As well as taking the total price and then dividing it by the total bushels giving me the total price per bushel. Using these numbers I found the bushels per acre and then was able to multiply it by any amount of acreage for a given crop and found the future price.
+
+I would recommend that people plant corn oil or soy beans next year while using wheat in the winter as a buffer crop. Corn turned out to be the most profitable for next year I found that most likely there will be a total value of corn sold for 21.5 million going for $4.32 bushels per acre. I also found tobacco was the most risky with the largest margin of error either it was going to be a great year or a horrible year with a giant margin of error. Also that week is a great buffer crop because its price generally never changes and usually get a good amount of bushels per acre with that crop. 
+
+
+#Introduction
+
+Agriculture is the science of cultivating soil growing crops and raising livestock. Agriculture creates all the food we in synthetic fibers we use and some of the medicines we take. If you can say that agriculture is not one of the most important facets of all human lives.  With crops always being a guess you never know how much rain is coming or whether or not there’s gonna be a drought or if a tornado tears out your field. It ends up being the less guesswork the better.
+
+#Literature Review
+
+Dharavath Ramesh and B. Vishnu Vardhan  wrote a paper on data mining techniques and applications to agricultural yield data. they tell us that the problem of your production can be solved by data mining. They say that the problems that make finding agricultural yield data and making it accurate is how random in large the amount of variables are affecting that field. In the rest of their paper they going to write multiple different steps and data mining technologies that they believe they could apply to solve this problem.
+
+#Data
+
+Most of my data came from the USDA website. they have everything as CSV files and it’s up-to-date so all I had to do was download the CSV files to my directory and then pull the CSV files into R.
+
+```{r, echo=TRUE}
+##All data already is csv format via USDA
+##Load in all data into dataframes
+
+#CornData <- "C:/Users/Brendan Schulte/Desktop/RStudio_Proj_2020/DataForProj/Corn_Data.csv"
+#3Corn1 <- read.table (file = CornData, header = TRUE, sep = ",")
+
+#WheatData <- "C:/Users/Brendan Schulte/Desktop/RStudio_Proj_2020/DataForProj/Wheat_Data.csv"
+#Wheat1 <- read.table (file = WheatData, header = TRUE, sep = ",")
+
+#SoybeanData <- "C:/Users/Brendan Schulte/Desktop/RStudio_Proj_2020/DataForProj/Soybean_Data.csv"
+#Soybean1 <- read.table (file = SoybeanData, header = TRUE, sep = ",")
+
+#TobaccoData <- "C:/Users/Brendan Schulte/Desktop/RStudio_Proj_2020/DataForProj/Tobacco_Data.csv"
+#Tobacco1 <- read.table (file = TobaccoData, header = TRUE, sep = ",")
+
+##Use plyr and dplyr to manipulate data
+
+##Clean the data by removing rows that have no data in the original data frame
+
+#Corn2 <- Corn1[-c(51,52,53,54,56,55,57,58,59,60,61,62,63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87), ]
+#Soybean2 <- Soybean1[-c(63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87), ]
+#Wheat2 <- Wheat1[-c(63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87), ]
+#Tobacco2 <- Tobacco1[-c(63,64,65,66,67,68,69,70,71,72,73,74,75,76,77,78,79,80,81,82,83,84,85,86,87), ]
+```
+|  Crop  |      Value     |  Bushel |
+|:-------|:--------------:|--------:|
+| Corn   | 21,464,424.52  | 4974156 |
+| Tobacco| 12,338,353.14  | 6078006 |
+| Soybean| 15,837,768.23  | 1619056 |
+| Wheat  | 3,421,256.95   | 701146  |
+## Methodology
+
+
+```{r}
+##Find the Margin of Error Using  dplyr 
+
+#CornMarginOfErrorPrice <- summarize(Corn2, mean(AvgPriceLossGain))
+#SoybeanMarginOfErrorPrice <- summarize(Soybean2, mean(AvgPriceLossGain))
+#TobaccoMarginOfErrorPrice <- summarize(Tobacco2, mean(AvgPriceLossGain))
+#WheatMarginOfErrorPrice <- summarize(Wheat2, mean(AvgPriceLossGain))
+
+#CornMarginOfErrorBushels <- summarize(Corn2, mean(LossGainBushel))
+#SoybeanMarginOfErrorBushels <- summarize(Soybean2, mean(LossGainBushel))
+#WheatMarginOfErrorBushels <- summarize(Wheat2, mean(LossGainBushel))
+#TobaccoMarginOfErrorBushels <- summarize(Tobacco2, mean(LossGainBushel))
+
+##Assign Variables to the margin of error
+
+CornMarginOfErrorPrice1 <- 0.0558
+SoybeanMarginOfErrorPrice1 <- 0.2812
+TobaccoMarginOfErrorPrice1 <- 0.0556
+WheatMarginOfErrorPrice1 <- 0.1388
+
+CornMarginOfErrorBushels1 <- 	1.18
+SoybeanMarginOfErrorBushels1 <- 0.7238
+WheatMarginOfErrorBushels1 <- 1.3062
+TobaccoMarginOfErrorBushels1 <- 79.6368
+
+##Create Variable for next year estimates
+
+Corn2021 <- 	4.32
+Soybean2021 <- 	9.78 
+Tobacco2021 <- 2.03 
+Wheat2021 <- 4.88
+
+##Converting Data in DataFrame to Usable data types for ggplot2
+
+#CornDataGraph$Value <- as.numeric(CornDataGraph$Value)
+#CornDataGraph1$Year <- as.numeric(CornDataGraph1$Year)
+#SoybeanDataGraph1$Value <- as.double(SoybeanDataGraph1$Value)
+#SoybeanDataGraph1$Year <- as.numeric(SoybeanDataGraph1$Year)
+#TobaccoDataGraph1$Value <- as.double(TobaccoDataGraph1$Value)
+#TobaccoDataGraph1$Year <- as.numeric(TobaccoDataGraph1$Year)
+#WheatDataGraph1$Value <- as.double(WheatDataGraph1$Value)
+#WheatDataGraph1$Year <- as.numeric(WheatDataGraph1$Year)
+
+```
+
+## Results
+
+```{r , echo=TRUE}
+##Use ggplot2 for creating graphs
+
+options(scipen=999)
+
+#CornGraph <- ggplot(CornDataGraph1, aes(x=CornYear, y=CornValue)) +
+#  geom_smooth(method="auto", col="firebrick", se = FALSE) +
+#  labs(title="Total Price Of Corn", subtitle="Value in USD",
+#       y="Total Value($)", x="Year", caption="Figure 1. Corn") +
+#  scale_colour_brewer(palette = "Set1")
+#CornGraph + scale_colour_excel() + theme_excel()
+
+#SoybeanGraph <- ggplot(SoybeanDataGraph1, aes(x=SoybeanYear, y=SoybeanValue)) +
+#  geom_smooth(method="auto", col="firebrick", se = FALSE) +
+#  labs(title="Total Price Of Soybean", subtitle="Value in USD",
+#       y="Total Value($)", x="Year", caption="Figure 1. Soybean") +
+#  scale_colour_brewer(palette = "Set1")
+#SoybeanGraph + scale_colour_excel() + theme_excel()
+
+#TobaccoGraph <- ggplot(TobaccoDataGraph1, aes(x=TobaccoYear, y=TobaccoValue)) +
+#  geom_smooth(method="auto", col="firebrick", se = FALSE) +
+#  labs(title="Total Price Of Tobacco", subtitle="Value in USD",
+#       y="Total Value($)", x="Year", caption="Figure 1. Tobacco") +
+#  scale_colour_brewer(palette = "Set1")
+#TobaccoGraph + scale_colour_excel() + theme_excel()
+
+#WheatGraph <- ggplot(WheatDataGraph1, aes(x=WheatYear, y=WheatValue)) +
+#  geom_smooth(method="auto", col="firebrick", se = FALSE) +
+#  labs(title="Total Price Of Wheat", subtitle="Value in USD",
+#       y="Total Value($)", x="Year", caption="Figure 1. Wheat") +
+#  scale_colour_brewer(palette = "Set1")
+#WheatGraph + scale_colour_excel() + theme_excel()
+```
+
+In the end you find that Corn is a very stable crop since it has a low margin of error on price and bushels harvested per acre, followed by soybeans, wheat, and then tobacco.
+
+```{r echo = TRUE}
+##Assign Variables to the margin of error
+
+CornMarginOfErrorPrice1 <- 0.0558
+SoybeanMarginOfErrorPrice1 <- 0.2812
+TobaccoMarginOfErrorPrice1 <- 0.0556
+WheatMarginOfErrorPrice1 <- 0.1388
+
+CornMarginOfErrorBushels1 <- 	1.18
+SoybeanMarginOfErrorBushels1 <- 0.7238
+WheatMarginOfErrorBushels1 <- 1.3062
+TobaccoMarginOfErrorBushels1 <- 79.6368
+
+##Create Variable for next year estimates
+
+Corn2021 <- 	4.32
+Soybean2021 <- 	9.78 
+Tobacco2021 <- 2.03 
+Wheat2021 <- 4.88
+```
+
+## Implications
+
+For other researchers attempting this I would tell them that they need to take in account more variables but the fact is there’s so much information going along with what could happen across agriculture. Weather could ruin crops while crime statistics could take people who destroy property into account so I would say that as long as you’re following the profit it takes an account of things that went wrong or right that year as well as inflation.
+
+## Conclusion
+
+In conclusion I would say that my research question got answered, that Corn is the most profitable crop for 2021. While taking into account inflation and destruction of crops using dtad from years prior and using that to create a good estimation to forecast what will happen in the next year.
+
+## Reference
+
+Ramesh A. Medar & Vijay. S. Rajpurohit. (September 2014).A survey on Data Mining Techniques for Crop Yield Prediction. International Journal of Advance Research in Computer Science and Management Studies. Volume 2, Issue 9.
